@@ -1,4 +1,8 @@
 from tkinter import Tk, Text, Button, Scrollbar, Frame
+from Recognition import Recognition
+import threading
+
+is_recording = [False, ]
 
 
 class Application:
@@ -45,17 +49,24 @@ class Application:
                                      height=self.__btn_height)
         self.__btn_lang_eng.pack(anchor="center", fill="x", expand=True, side="bottom", before=self.__btn_lang_ru)
 
+        self.__recognition = Recognition()
+
     def __clicked_btn_record(self):
         self.__txt.delete(0.0, "end")
-        self.__txt.insert(0.0, "Запись")
         self.__btn_record.config(state='disabled')
         self.__btn_stop_record.config(state='normal')
+        global is_recording
+        is_recording[0] = True
+        threading.Thread(target=self.__recognition.record, args=(is_recording,)).start()
 
     def __clicked_btn_stop_record(self):
         self.__txt.delete(0.0, "end")
-        self.__txt.insert(0.0, "Стоп")
         self.__btn_stop_record.config(state='disabled')
         self.__btn_record.config(state='normal')
+        global is_recording
+        is_recording[0] = False
+        text = self.convert_speech_to_text()
+        self.__txt.insert(0.0, text)
 
     def __clicked_btn_lang_ru(self):
         self.__language = "ru"
@@ -66,6 +77,14 @@ class Application:
         self.__language = "eng"
         self.__btn_lang_eng.config(state='disabled')
         self.__btn_lang_ru.config(state='normal')
+
+    def convert_speech_to_text(self) -> str:
+        if self.__language == "ru":
+            text = self.__recognition.recognize_speech_ru()
+        else:
+            text = "eng"
+        self.__recognition.copy_to_clipboard(text)
+        return text
 
     def run(self):
         self.__window.mainloop()
