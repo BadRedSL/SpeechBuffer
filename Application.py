@@ -85,7 +85,7 @@ class Application:
         if self.__language == "ru":
             text = self.__recognition.recognize_speech_ru()
         else:
-            text = "eng"
+            text = self.__recognition.recognize_speech_eng()
         self.__recognition.copy_to_clipboard(text)
         return text
 

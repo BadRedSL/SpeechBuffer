@@ -4,6 +4,7 @@ import nemo.collections.asr as nemo_asr
 import language_tool_python
 import torch
 import win32clipboard
+import textblob as tb
 
 
 class Recognition:
@@ -17,8 +18,9 @@ class Recognition:
         self.__AUDIO_PATH = f"./{self.__OUTPUT_FILENAME}"
 
         self.__sber_quartzNet = nemo_asr.models.EncDecCTCModel.restore_from("./ZMv")
+        self.__nemo_quartzNet = nemo_asr.models.ASRModel.from_pretrained(model_name="QuartzNet15x5Base-En")
 
-    def record(self, is_recording: list[bool,]):
+    def record(self, is_recording: list[bool, ]):
         p = pyaudio.PyAudio()
 
         stream = p.open(format=self.__FORMAT,
@@ -54,10 +56,23 @@ class Recognition:
         print("* done transcribing")
         return transcripts[0]
 
+    def __recognize_eng(self) -> str:
+        files = [self.__AUDIO_PATH]
+        transcripts = self.__nemo_quartzNet.transcribe(paths2audio_files=files)
+        print("* done transcribing")
+        return transcripts[0]
+
     @staticmethod
     def __spelling_correction_ru(text: str) -> str:
         tool = language_tool_python.LanguageTool('ru-RU')
         corrected_text = tool.correct(text)
+        print("* done spell correction")
+        return corrected_text
+
+    @staticmethod
+    def __spelling_correction_eng(text: str) -> str:
+        tool = tb.TextBlob(text)
+        corrected_text = tool.correct()
         print("* done spell correction")
         return corrected_text
 
@@ -69,10 +84,25 @@ class Recognition:
         print("* done punctuation correction")
         return text_with_punctuation
 
+    @staticmethod
+    def __punctuation_correction_eng(text: str) -> str:
+        model, example_texts, languages, punct, apply_te = torch.hub.load(repo_or_dir='snakers4/silero-models',
+                                                                          model='silero_te')
+        text_with_punctuation = apply_te(text.lower(), lan='en')
+        print("* done punctuation correction")
+        return text_with_punctuation
+
     def recognize_speech_ru(self) -> str:
         transcript = self.__recognize_ru()
         corrected_text = self.__spelling_correction_ru(transcript)
         text_with_punctuation = self.__punctuation_correction_ru(corrected_text)
+        print("* done speech recognize")
+        return text_with_punctuation
+
+    def recognize_speech_eng(self) -> str:
+        transcript = self.__recognize_eng()
+        corrected_text = self.__spelling_correction_eng(transcript)
+        text_with_punctuation = self.__punctuation_correction_eng(corrected_text)
         print("* done speech recognize")
         return text_with_punctuation
 
