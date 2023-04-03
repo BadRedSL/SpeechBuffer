@@ -82,10 +82,7 @@ class Application:
         self.__btn_lang_ru.config(state='normal')
 
     def convert_speech_to_text(self) -> str:
-        if self.__language == "ru":
-            text = self.__recognition.recognize_speech_ru()
-        else:
-            text = "eng"
+        text = self.__recognition.recognize_speech(self.__language)
         self.__recognition.copy_to_clipboard(text)
         return text
 
