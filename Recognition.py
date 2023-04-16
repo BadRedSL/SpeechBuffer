@@ -85,6 +85,7 @@ class Recognition:
         transcript = self.__recognize(language)
         corrected_text = self.__spelling_correction(transcript, language)
         text_with_punctuation = self.__punctuation_correction(corrected_text, language)
+        text_with_punctuation = text_with_punctuation.replace(",,", ",")
         print("* done speech recognize")
         return text_with_punctuation
 

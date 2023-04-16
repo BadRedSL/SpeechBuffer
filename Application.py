@@ -35,19 +35,22 @@ class Application:
 
         self.__btn_record = Button(master=self.__frame_btn, text="Запись", command=self.__clicked_btn_record,
                                    height=self.__btn_height)
-        self.__btn_record.pack(anchor="center", fill="x", expand=True, side="bottom")
+        self.__btn_record.pack(anchor="center", fill="x", expand=True, side="bottom", padx=5)
 
         self.__btn_stop_record = Button(master=self.__frame_btn, text="Стоп", command=self.__clicked_btn_stop_record,
                                         height=self.__btn_height, state="disabled")
-        self.__btn_stop_record.pack(anchor="center", fill="x", expand=True, side="bottom", before=self.__btn_record)
+        self.__btn_stop_record.pack(anchor="center", fill="x", expand=True, side="bottom", before=self.__btn_record,
+                                    padx=5)
 
         self.__btn_lang_ru = Button(master=self.__frame_btn, text="Русский", command=self.__clicked_btn_lang_ru,
                                     height=self.__btn_height, state="disabled")
-        self.__btn_lang_ru.pack(anchor="center", fill="x", expand=True, side="bottom", before=self.__btn_stop_record)
+        self.__btn_lang_ru.pack(anchor="center", fill="x", expand=True, side="bottom", before=self.__btn_stop_record,
+                                padx=5)
 
         self.__btn_lang_eng = Button(master=self.__frame_btn, text="Английский", command=self.__clicked_btn_lang_eng,
                                      height=self.__btn_height)
-        self.__btn_lang_eng.pack(anchor="center", fill="x", expand=True, side="bottom", before=self.__btn_lang_ru)
+        self.__btn_lang_eng.pack(anchor="center", fill="x", expand=True, side="bottom", before=self.__btn_lang_ru,
+                                 padx=5)
 
         self.__recognition = Recognition()
         self.__thread = threading.Thread()
